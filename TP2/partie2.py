@@ -48,13 +48,16 @@ losses = []
 best_accuracy = 0
 for epoch in range(nb_epoch):
     print("epoch " + str(epoch+1) + "...")
+    loss_sum = 0
     for images, labels in train_loader:
         optimizer.zero_grad()
         outputs = cnn(images)
         loss = criterion(outputs, labels)
         loss.backward()
         optimizer.step()
-        losses.append(loss.item())
+        loss_sum += loss.item()
+        # losses.append(loss.item())
+    losses.append(loss_sum)
     # Validation
     correct = 0
     for images, labels in valid_loader:
@@ -83,7 +86,7 @@ print ("Accuracy on unseen data : ", correct.item() / test_loader.sampler.num_sa
 
 
 # Plot
-plt.plot(losses[0::500])
+plt.plot(losses)
 plt.show()
 
 print ("DONE")
