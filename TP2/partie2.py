@@ -2,15 +2,16 @@ import torch
 import torchvision
 import torchvision.datasets as datasets
 from cnn import CNN
+from fullconnected import FullConnected
+from cnn2 import CNN2
 import torch.nn as nn
 from torchvision import transforms
 from torch.autograd import Variable
 import matplotlib.pyplot as plt
 import numpy as np
+import torch.nn.functional as F
 
 print ("TP2 INF8225..")
-
-# Source : https://mc.ai/intro-to-pytorch-with-image-classification-on-a-fashion-clothes-dataset/
 
 # Global setup
 nb_epoch = 5
@@ -38,7 +39,9 @@ valid_loader = torch.utils.data.DataLoader(dataset=mnist_validset,batch_size=bat
 
 # Instantiate the cnn
 cnn = CNN()
-criterion = nn.CrossEntropyLoss()
+# cnn = FullConnected()
+# cnn = CNN2()
+criterion = nn.NLLLoss()
 optimizer = torch.optim.Adam(cnn.parameters(), lr=lr)
 
 
@@ -48,16 +51,13 @@ losses = []
 best_accuracy = 0
 for epoch in range(nb_epoch):
     print("epoch " + str(epoch+1) + "...")
-    loss_sum = 0
     for images, labels in train_loader:
         optimizer.zero_grad()
         outputs = cnn(images)
         loss = criterion(outputs, labels)
         loss.backward()
         optimizer.step()
-        loss_sum += loss.item()
-        # losses.append(loss.item())
-    losses.append(loss_sum)
+    losses.append(loss.item() + 1)
     # Validation
     correct = 0
     for images, labels in valid_loader:
@@ -86,6 +86,8 @@ print ("Accuracy on unseen data : ", correct.item() / test_loader.sampler.num_sa
 
 
 # Plot
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
 plt.plot(losses)
 plt.show()
 

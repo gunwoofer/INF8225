@@ -1,6 +1,7 @@
 import torch
 import torchvision
 import torch.nn as nn
+import torch.nn.functional as F
 
 class CNN(nn.Module):
     def __init__(self):
@@ -30,6 +31,6 @@ class CNN(nn.Module):
         x = self.l1(x)
         x = self.l2(x)
         x = x.view(x.size(0), -1)
-        x = self.full_connected(x)
+        x = F.log_softmax((self.full_connected(x)))
         return x
 
